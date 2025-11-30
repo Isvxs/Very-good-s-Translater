@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word-by-Word Translator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    textarea { width: 100%; height: 100px; }
+    select, button { padding: 8px; margin-top: 10px; }
+    #result { margin-top: 20px; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Word-by-Word Google Translate</h2>
+
+  <textarea id="input" placeholder="Enter text here..."></textarea>
+  <br />
+  <label>Translate: </label>
+  <select id="fromLang">
+    <option value="en">English</option>
+  </select>
+  to
+  <select id="toLang">
+    <option value="zh-TW">Chinese (Traditional)</option>
+  </select>
+  <br />
+
+  <button onclick="translateWords()">Translate</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function translateWord(word, from, to) {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(word)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data[0][0][0];
+    }
+
+    async function translateWords() {
+      const text = document.getElementById("input").value.trim();
+      if (!text) return;
+
+      const words = text.split(/\s+/);
+      const from = document.getElementById("fromLang").value;
+      const to = document.getElementById("toLang").value;
+
+      let output = [];
+      for (const w of words) {
+        const t = await translateWord(w, from, to);
+        output.push(t);
+      }
+
+      document.getElementById("result").innerText = output.join(" ");
+    }
+  </script>
+</body>
+</html>
